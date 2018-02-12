@@ -30,7 +30,7 @@ public class Network {
             @Override
             public void run() {
                 try {
-                    clientSocket = new Socket("192.168.0.9", PORT_NUM);
+                    clientSocket = new Socket("222.235.240.104", PORT_NUM);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -56,26 +56,22 @@ public class Network {
         }.start();
     }
 
-    public String getMessageFromServer() {
+    public void getMessageFromServer(final ArrayList<String> list) {
         new Thread(){
             @Override
             public void run() {
-                if (clientSocket != null) {
-                    try {
-                        bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                while(true){
+                    if (clientSocket != null) {
+                        try {
+                            bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                            list.add(bufferedReader.readLine());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+
             }
         }.start();
-
-        try {
-            return bufferedReader.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return "잘못 들어갔습니다";
     }
 }

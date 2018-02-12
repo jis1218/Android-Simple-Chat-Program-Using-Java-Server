@@ -2,7 +2,9 @@ package com.insup.simplechat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,16 +36,22 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
         editText = findViewById(R.id.editText);
         recyclerViewAdapter = new RecyclerViewAdapter(this);
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         network = new Network();
         list = new ArrayList<>();
+        network.getMessageFromServer(list);
     }
 
     private void setListener(){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                network.sendMessageToServer(list, editText.getText().toString());
+                network.sendMessageToServer(editText.getText().toString());
+                network.getMessageFromServer(list);
+                Log.d("CountList", list.size() + "");
                 recyclerViewAdapter.setNotifyRecyclerView(list);
+
             }
         });
     }

@@ -2,6 +2,7 @@ package com.insup.simplechat;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  */
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyHolder> {
-    ArrayList<String> list;
+    ArrayList<String> list = new ArrayList<>();
     Context context;
 
     public RecyclerViewAdapter(Context context) {
@@ -24,7 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void setNotifyRecyclerView(ArrayList<String> list){
         this.list = list;
         notifyDataSetChanged();
-
+        Log.d("RecyclerViewAdapter", list.size()+"");
     }
 
     @Override
@@ -35,9 +36,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(MyHolder holder, int position) {
-
         holder.textChat.setText(list.get(position));
-
     }
 
     @Override
