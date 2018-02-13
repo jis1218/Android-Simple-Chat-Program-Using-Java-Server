@@ -1,5 +1,7 @@
 package com.insup.simplechat;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerViewAdapter recyclerViewAdapter;
     Network network;
     ArrayList<String> list;
+    Handler handler;
 
 
 
@@ -35,12 +39,19 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         button = findViewById(R.id.button);
         editText = findViewById(R.id.editText);
+        setHandler();
         recyclerViewAdapter = new RecyclerViewAdapter(this);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        network = new Network();
+        network = new Network(handler);
         list = new ArrayList<>();
-        network.getMessageFromServer(list);
+
+
+        try {
+            network.getMessageFromServer(recyclerViewAdapter, list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setListener(){
@@ -48,11 +59,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 network.sendMessageToServer(editText.getText().toString());
-                network.getMessageFromServer(list);
+                try {
+                    network.getMessageFromServer(recyclerViewAdapter, list);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 Log.d("CountList", list.size() + "");
                 recyclerViewAdapter.setNotifyRecyclerView(list);
 
             }
         });
+    }
+
+    private void setHandler(){
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                //super.handleMessage(msg);
+
+                switch (msg.what){
+                    case 999 :
+                        recyclerViewAdapter.setNotifyRecyclerView(list);
+                        break;
+                }
+            }
+        };
     }
 }

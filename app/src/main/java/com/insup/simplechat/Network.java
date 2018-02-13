@@ -1,5 +1,6 @@
 package com.insup.simplechat;
 
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -18,8 +19,9 @@ public class Network {
     Socket clientSocket = null;
     OutputStream outputStream = null;
     BufferedReader bufferedReader = null;
-
-    public Network() {
+    Handler handler;
+    public Network(Handler handler) {
+        this.handler = handler;
         runNetwork();
     }
 
@@ -30,7 +32,7 @@ public class Network {
             @Override
             public void run() {
                 try {
-                    clientSocket = new Socket("222.235.240.104", PORT_NUM);
+                    clientSocket = new Socket("192.168.0.9", PORT_NUM);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -56,21 +58,23 @@ public class Network {
         }.start();
     }
 
-    public void getMessageFromServer(final ArrayList<String> list) {
+    public void getMessageFromServer(final RecyclerViewAdapter recyclerViewAdapter, final ArrayList<String> list) throws IOException {
+
         new Thread(){
             @Override
             public void run() {
-                while(true){
-                    if (clientSocket != null) {
-                        try {
+                try{
+                    while(true){
+
+                        if(clientSocket!=null){
                             bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                             list.add(bufferedReader.readLine());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            handler.sendEmptyMessage(999);
                         }
                     }
+                }catch(IOException e){
+                    e.printStackTrace();
                 }
-
             }
         }.start();
     }
